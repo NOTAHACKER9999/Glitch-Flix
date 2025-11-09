@@ -1,12 +1,12 @@
 {
   "name": "GlitchFlix",
-  "version": "1.0.0",
-  "description": "A Progressive Web App deployed on Vercel",
+  "version": "1.2.0",
+  "description": "GlitchFlix Progressive Web App deployed on Vercel",
   "main": "index.html",
   "type": "module",
   "scripts": {
     "start": "vercel dev",
-    "build": "echo 'Static PWA, no build required'"
+    "build": "echo 'Static PWA — no build required'"
   },
   "dependencies": {},
   "devDependencies": {},
