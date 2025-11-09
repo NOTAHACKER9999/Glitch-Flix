@@ -1,0 +1,16 @@
+{
+  "name": "GlitchFlix",
+  "version": "1.0.0",
+  "description": "A Progressive Web App deployed on Vercel",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev",
+    "build": "echo 'Static PWA, no build required'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18"
+  }
+}
