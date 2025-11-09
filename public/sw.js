@@ -1,9 +1,8 @@
 const CACHE_NAME = "glitchflix-cache-v1";
 const urlsToCache = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/Icon.png"
+  "index.html",
+  "manifest.json",
+  "Icon.png"
 ];
 
 // Install service worker and cache assets
