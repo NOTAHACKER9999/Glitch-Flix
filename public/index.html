@@ -6,264 +6,241 @@
 <title>GlitchFlix</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#000;color:#fff;font-family:'Poppins',sans-serif;overflow-x:hidden;}
-header{position:sticky;top:0;z-index:1000;background:#111;display:flex;align-items:center;justify-content:space-between;padding:15px 30px;border-bottom:2px solid #c00;}
-#logo{font-size:1.8rem;font-weight:bold;color:#ff3030;}
-#openSearch{background:#111;border:none;color:#fff;font-size:1.2rem;cursor:pointer;}
-#openSearch:hover{color:#ff3030;}
-.section-title{font-size:1.4rem;color:#ff3030;margin:20px 30px 10px;border-left:5px solid #ff3030;padding-left:10px;}
-.movie-row{display:flex;overflow-x:auto;padding:0 30px 20px;gap:15px;scroll-behavior:smooth;}
-.movie-row::-webkit-scrollbar{height:8px;}
-.movie-row::-webkit-scrollbar-thumb{background:#c00;border-radius:4px;}
-.movie{flex:0 0 auto;width:180px;background:#111;border-radius:10px;overflow:hidden;cursor:pointer;transition: transform 0.3s, box-shadow 0.3s;position:relative;}
-.movie:hover{transform:scale(1.07);box-shadow:0 0 15px #c00;}
-.movie img{width:100%;height:270px;object-fit:cover;border-bottom:2px solid #c00;}
-.movie-info{text-align:center;padding:8px;}
-.movie-info h3{font-size:1rem;margin-bottom:5px;}
-.rating{color:#ff3030;font-weight:bold;}
-#movieDetailOverlay{display:none;position:fixed;inset:0;background: rgba(0,0,0,0.95);z-index:3000;padding:30px;overflow-y:auto;color:#fff;}
-#movieDetailOverlay.show{display:block;}
-#movieDetailOverlay .content{display:flex;flex-wrap:wrap;gap:20px;max-width:900px;margin:0 auto;background:#111;padding:20px;border-radius:10px;position:relative;}
-#movieDetailOverlay img{width:300px;height:450px;object-fit:cover;border-radius:10px;flex-shrink:0;}
-#movieDetailOverlay .details{flex:1;display:flex;flex-direction:column;}
-#movieDetailOverlay h2{color:#ff3030;margin-bottom:10px;font-size:1.8rem;}
-#movieDetailOverlay p{margin-bottom:8px;line-height:1.4;}
-#playButton{padding:12px 25px;background:#c00;border:none;color:#fff;border-radius:5px;cursor:pointer;font-weight:bold;transition: background 0.3s;margin-top:10px;font-size:1rem;}
-#playButton:hover{background:#ff3030;}
-#closeDetail{position:absolute;top:15px;right:25px;font-size:2rem;cursor:pointer;color:#fff;}
-#player{margin-top:20px;width:100%;height:480px;border:none;border-radius:10px;display:none;}
-#searchOverlay{display:none;position:fixed;inset:0;background: rgba(0,0,0,0.95);z-index:4000;padding:30px;overflow-y:auto;}
-#searchOverlay.show{display:block;}
-#closeSearch{position:absolute;top:15px;right:25px;font-size:2rem;cursor:pointer;color:#fff;}
-#searchControls{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:20px;position:relative;}
-#searchInputOverlay{width:60%;max-width:400px;padding:12px 15px;font-size:1.2rem;border-radius:5px;border:1px solid #c00;background:#000;color:#fff;outline:none;}
-#searchInputOverlay:focus{border-color:#ff3030;}
-#categoryBtnOverlay{padding:10px 15px;border:none;background:#111;color:#fff;border-radius:5px;cursor:pointer;font-size:1rem;}
-#categoryBtnOverlay:hover{background:#c00;}
-#categoryMenu{display:none;position:absolute;top:50px;background:#111;border:1px solid #c00;border-radius:5px;padding:10px;z-index:4500;flex-direction:column;}
-#categoryMenu button{background:#111;color:#fff;border:none;padding:8px 15px;margin:3px 0;border-radius:5px;cursor:pointer;transition: background 0.3s;text-align:left;}
-#categoryMenu button:hover{background:#c00;}
-#searchResults{display:flex;flex-wrap:wrap;gap:15px;justify-content:center;}
+body{margin:0;font-family:'Poppins',sans-serif;background:#111;color:#fff;display:flex;overflow-x:hidden}
+#sidebar{width:220px;background:#000;border-right:2px solid #fff;display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0}
+#sidebar h2{color:#fff;text-align:center;padding:15px 0;margin:0;font-size:1.5rem;border-bottom:1px solid #fff;}
+#sidebar button{background:none;border:none;color:#fff;padding:15px;text-align:left;cursor:pointer;font-size:1rem;transition:.3s;border-left:5px solid transparent}
+#sidebar button.active,#sidebar button:hover{border-left:5px solid #fff;color:#fff}
+#sidebarFooter {margin-top:auto;text-align:center;padding:15px 0;font-size:0.9rem;color:#fff;border-top:1px solid #fff;}
+#mainContent{margin-left:220px;padding:20px;width:calc(100% - 220px);overflow-y:auto;flex:1}
+.tabContent{display:none}
+.tabContent.active{display:block}
+.section-title{font-size:1.4rem;color:#fff;margin:20px 0 10px;border-left:5px solid #fff;padding-left:10px}
+.movie-row{display:flex;overflow-x:auto;padding-bottom:20px;gap:15px;scroll-behavior:smooth}
+.movie{flex:0 0 auto;width:180px;background:#000;border-radius:10px;cursor:pointer;transition:.3s;position:relative}
+.movie:hover{transform:scale(1.05);box-shadow:0 0 10px #fff}
+.movie img{width:100%;height:270px;object-fit:cover;border-bottom:2px solid #fff}
+.movie-info{text-align:center;padding:8px;color:#fff}
+.movie-info h3{font-size:1rem;margin:0}
+
+/* Overlay */
+#detailOverlay,#videoOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:3000;padding:20px;overflow-y:auto;color:#fff}
+#detailOverlay.show,#videoOverlay.show{display:block}
+.overlayContent{display:flex;flex-wrap:wrap;gap:20px;max-width:1000px;margin:0 auto;background:#000;padding:20px;border-radius:10px}
+.overlayContent img{width:320px;height:450px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.overlayContent .details{flex:1;display:flex;flex-direction:column}
+#closeDetail,#closeVideo{position:absolute;top:15px;right:25px;font-size:2rem;cursor:pointer;color:#fff}
+#player{margin-top:14px;width:100%;height:520px;border:none;border-radius:10px}
+
+/* Episode list */
+.season-btn,.episode-btn{background:#000;color:#fff;border:1px solid #fff;padding:6px 10px;margin:5px;border-radius:5px;cursor:pointer}
+.season-btn.active,.episode-btn.active{background:#fff;color:#000}
+
+/* Search */
+.searchBar{margin:10px 0;display:flex;gap:10px}
+.searchBar input{flex:1;padding:10px;font-size:1rem;border-radius:5px;border:1px solid #fff;background:#000;color:#fff;outline:none}
+.searchBar button{padding:10px;border:none;background:#000;color:#fff;border-radius:5px;cursor:pointer;border:1px solid #fff}
+
+@media(max-width:800px){.overlayContent img{width:220px;height:320px}#player{height:320px}}
 </style>
 </head>
-  <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").then(registration => {
-      console.log("Service Worker registered with scope:", registration.scope);
-    }).catch(err => {
-      console.log("Service Worker registration failed:", err);
-    });
-  });
-}
-  </script>
 <body>
 
-<header>
-  <div id="logo">GlitchFlix</div>
-  <button id="openSearch"><i class="fas fa-search"></i></button>
-</header>
-
-<main>
-  <h2 class="section-title" id="recentTitle" style="display:none;">Recently Watched</h2>
-  <div class="movie-row" id="recentList"></div>
-
-  <h2 class="section-title">Popular Movies</h2>
-  <div class="movie-row" id="popularList"></div>
-
-  <h2 class="section-title">Top Rated Movies</h2>
-  <div class="movie-row" id="topRatedList"></div>
-
-  <h2 class="section-title">Upcoming Movies</h2>
-  <div class="movie-row" id="upcomingList"></div>
-</main>
-
-<!-- Movie Detail Overlay -->
-<div id="movieDetailOverlay">
-  <div id="closeDetail">&times;</div>
-  <div class="content">
-    <img id="detailPoster" src="" alt="Poster">
-    <div class="details">
-      <h2 id="detailTitle"></h2>
-      <p><strong>Rating:</strong> <span id="detailRating"></span></p>
-      <p><strong>Release Date:</strong> <span id="detailRelease"></span></p>
-      <p><strong>Runtime:</strong> <span id="detailRuntime"></span> min</p>
-      <p><strong>Genres:</strong> <span id="detailGenres"></span></p>
-      <p id="detailOverview"></p>
-      <button id="playButton">Play</button>
-      <iframe id="player" allowfullscreen></iframe>
-    </div>
-  </div>
+<div id="sidebar">
+<h2>GlitchFlix</h2>
+<button class="tabBtn active" data-tab="dashboard">Dashboard</button>
+<button class="tabBtn" data-tab="movies">Movies</button>
+<button class="tabBtn" data-tab="tv">TV</button>
+<div id="sidebarFooter">V2 by Glitch Override</div>
 </div>
 
-<!-- Search Overlay -->
-<div id="searchOverlay">
-  <div id="closeSearch">&times;</div>
-  <div id="searchControls">
-    <input type="text" id="searchInputOverlay" placeholder="Search for a movie...">
-    <button id="categoryBtnOverlay"><i class="fas fa-list"></i> Categories</button>
-    <div id="categoryMenu"></div>
-  </div>
-  <div class="movie-row" id="searchResults"></div>
+<div id="mainContent">
+<div id="dashboard" class="tabContent active">
+<h2 class="section-title">Recently Watched</h2>
+<div class="movie-row" id="recentList"></div>
+</div>
+
+<div id="movies" class="tabContent">
+<div class="searchBar">
+<input type="text" placeholder="Search Movies..." id="movieSearch">
+</div>
+<div id="movieContent">
+<h2 class="section-title">Popular Movies</h2>
+<div class="movie-row" id="popularMovies"></div>
+<h2 class="section-title">Top Rated Movies</h2>
+<div class="movie-row" id="topRatedMovies"></div>
+</div>
+<div class="movie-row" id="movieSearchResults" style="display:none;"></div>
+</div>
+
+<div id="tv" class="tabContent">
+<div class="searchBar">
+<input type="text" placeholder="Search TV Shows..." id="tvSearch">
+</div>
+<div id="tvContent">
+<h2 class="section-title">Popular TV Shows</h2>
+<div class="movie-row" id="popularTV"></div>
+<h2 class="section-title">Top Rated TV Shows</h2>
+<div class="movie-row" id="topRatedTV"></div>
+</div>
+<div class="movie-row" id="tvSearchResults" style="display:none;"></div>
+</div>
+</div>
+
+<!-- Detail Overlay -->
+<div id="detailOverlay">
+<div id="closeDetail">&times;</div>
+<div class="overlayContent">
+<img id="detailPoster" src="">
+<div class="details">
+<h2 id="detailTitle"></h2>
+<p><strong>Rating:</strong> <span id="detailRating"></span></p>
+<p id="detailOverview"></p>
+<div id="seasons"></div>
+<div id="episodes"></div>
+</div>
+</div>
+</div>
+
+<!-- Video Overlay -->
+<div id="videoOverlay">
+<div id="closeVideo">&times;</div>
+<iframe id="player" allowfullscreen></iframe>
 </div>
 
 <script>
-const API_KEY = "0e33c92186263620ce8c7f6b8fb35b00";
-const API_URL = "https://api.themoviedb.org/3";
-const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
-const FALLBACK_IMAGE_URL = "https://dummyimage.com/200x300/111/ff0000&text=No+Image";
+const API_KEY="0e33c92186263620ce8c7f6b8fb35b00";
+const API_URL="https://api.themoviedb.org/3";
+const IMAGE_BASE="https://image.tmdb.org/t/p/w500";
+const FALLBACK="https://dummyimage.com/300x450/111/ffffff&text=No+Image";
 
-// Elements
-const searchOverlay = document.getElementById("searchOverlay");
-const openSearch = document.getElementById("openSearch");
-const closeSearch = document.getElementById("closeSearch");
-const searchInputOverlay = document.getElementById("searchInputOverlay");
-const searchResults = document.getElementById("searchResults");
-const categoryBtnOverlay = document.getElementById("categoryBtnOverlay");
-const categoryMenu = document.getElementById("categoryMenu");
+// Tabs
+document.querySelectorAll(".tabBtn").forEach(btn=>{
+btn.addEventListener("click",()=>{
+document.querySelectorAll(".tabBtn").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+document.querySelectorAll(".tabContent").forEach(c=>c.classList.remove("active"));
+document.getElementById(btn.dataset.tab).classList.add("active");
+});
+});
 
-const recentTitle = document.getElementById("recentTitle");
-const recentList = document.getElementById("recentList");
-const popularList = document.getElementById("popularList");
-const topRatedList = document.getElementById("topRatedList");
-const upcomingList = document.getElementById("upcomingList");
+// Card
+function createCard(item,type){
+const div=document.createElement("div"); div.className="movie";
+const img=document.createElement("img"); img.src=item.poster_path?IMAGE_BASE+item.poster_path:FALLBACK;
+const info=document.createElement("div"); info.className="movie-info";
+info.innerHTML=`<h3>${item.title||item.name}</h3>`;
+div.appendChild(img); div.appendChild(info);
+div.onclick=()=> type==="tv"?showTVDetail(item):showMovieDetail(item);
+return div;
+}
 
-const movieDetailOverlay = document.getElementById("movieDetailOverlay");
-const closeDetail = document.getElementById("closeDetail");
-const detailPoster = document.getElementById("detailPoster");
-const detailTitle = document.getElementById("detailTitle");
-const detailRating = document.getElementById("detailRating");
-const detailRelease = document.getElementById("detailRelease");
-const detailRuntime = document.getElementById("detailRuntime");
-const detailGenres = document.getElementById("detailGenres");
-const detailOverview = document.getElementById("detailOverview");
-const playButton = document.getElementById("playButton");
-const player = document.getElementById("player");
+// Render row
+async function renderRow(url,container,type){
+const res=await fetch(url); const data=await res.json();
+container.innerHTML=""; if(data.results)data.results.forEach(i=>container.appendChild(createCard(i,type)));
+}
 
-// --- Helpers ---
-function saveRecentlyWatched(item){
-  let watched = JSON.parse(localStorage.getItem("recentlyWatched")||"[]");
-  watched = watched.filter(m=>m.id!==item.id);
-  watched.unshift(item);
-  if(watched.length>5) watched.pop();
-  localStorage.setItem("recentlyWatched",JSON.stringify(watched));
-  renderRecentlyWatched();
+// Recently watched
+function saveRecentlyWatched(item,type){
+let arr=JSON.parse(localStorage.getItem("recent")||"[]");
+arr=arr.filter(x=>x.id!==item.id); arr.unshift({...item,type}); if(arr.length>10) arr.pop();
+localStorage.setItem("recent",JSON.stringify(arr)); renderRecentlyWatched();
 }
 function renderRecentlyWatched(){
-  let watched = JSON.parse(localStorage.getItem("recentlyWatched")||"[]");
-  recentTitle.style.display = watched.length>0?"block":"none";
-  recentList.innerHTML="";
-  watched.forEach(item=>recentList.appendChild(createCard(item)));
-}
-function createCard(item){
-  const div=document.createElement("div");
-  div.classList.add("movie");
-  const img=document.createElement("img");
-  img.src=item.poster_path?IMAGE_BASE_URL+item.poster_path:FALLBACK_IMAGE_URL;
-  img.onerror=()=>img.src=FALLBACK_IMAGE_URL;
-  const info=document.createElement("div");
-  info.classList.add("movie-info");
-  info.innerHTML=`<h3>${item.title||item.name}</h3><div class="rating">${item.vote_average.toFixed(1)}</div>`;
-  div.appendChild(img); div.appendChild(info);
-  div.onclick=()=>{ searchOverlay.classList.remove("show"); showDetail(item.id); };
-  return div;
-}
-async function fetchItems(url){ 
-  try{ 
-    const res=await fetch(url); 
-    const data=await res.json(); 
-    return data.results || []; 
-  } catch(e){ 
-    console.error(e); 
-    return []; 
-  }
-}
-async function renderRow(url, container){ 
-  const items = await fetchItems(url); 
-  container.innerHTML=""; 
-  items.forEach(item=>container.appendChild(createCard(item)));
+const recentList=document.getElementById("recentList");
+let arr=JSON.parse(localStorage.getItem("recent")||"[]");
+recentList.innerHTML=""; arr.forEach(item=>recentList.appendChild(createCard(item,item.type)));
 }
 
-// --- Detail Overlay ---
-async function showDetail(id){
-  const res = await fetch(`${API_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`);
-  const data = await res.json();
-  detailPoster.src = data.poster_path?IMAGE_BASE_URL+data.poster_path:FALLBACK_IMAGE_URL;
-  detailTitle.textContent = data.title;
-  detailRating.textContent = data.vote_average.toFixed(1);
-  detailRelease.textContent = data.release_date;
-  detailRuntime.textContent = data.runtime||'N/A';
-  detailGenres.textContent = data.genres.map(g=>g.name).join(", ");
-  detailOverview.textContent = data.overview;
-  movieDetailOverlay.classList.add("show");
-  player.style.display="none";
-  playButton.onclick=()=>{
-    player.src = `https://player.videasy.net/movie/${id}?color=FF0000`;
-    player.style.display="block";
-  };
-  saveRecentlyWatched({...data,media_type:"movie"});
+// Detail Overlays
+const detailOverlay=document.getElementById("detailOverlay"),
+detailPoster=document.getElementById("detailPoster"),
+detailTitle=document.getElementById("detailTitle"),
+detailRating=document.getElementById("detailRating"),
+detailOverview=document.getElementById("detailOverview"),
+seasonsEl=document.getElementById("seasons"),
+episodesEl=document.getElementById("episodes"),
+videoOverlay=document.getElementById("videoOverlay"),
+player=document.getElementById("player");
+
+document.getElementById("closeDetail").onclick=()=>{detailOverlay.classList.remove("show");episodesEl.innerHTML="";seasonsEl.innerHTML="";}
+document.getElementById("closeVideo").onclick=()=>{videoOverlay.classList.remove("show");player.src="";};
+
+// Movies
+function showMovieDetail(item){
+detailPoster.src=item.poster_path?IMAGE_BASE+item.poster_path:FALLBACK;
+detailTitle.textContent=item.title;
+detailRating.textContent=(item.vote_average||0).toFixed(1);
+detailOverview.textContent=item.overview||"No description";
+detailOverlay.classList.add("show");
+player.src=`https://player.videasy.net/movie/${item.id}`;
+videoOverlay.classList.add("show");
+saveRecentlyWatched(item,"movie");
 }
 
-// --- Event Listeners ---
-closeDetail.onclick=()=>{ movieDetailOverlay.classList.remove("show"); player.src=""; player.style.display="none"; };
-openSearch.onclick=()=>searchOverlay.classList.add("show");
-closeSearch.onclick=()=>searchOverlay.classList.remove("show");
-searchInputOverlay.addEventListener("input", async()=>{
-  const q = searchInputOverlay.value.trim();
-  if(!q){ searchResults.innerHTML=""; return; }
-  const items = await fetchItems(`${API_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${encodeURIComponent(q)}&page=1&include_adult=false`);
-  searchResults.innerHTML="";
-  items.forEach(m=>searchResults.appendChild(createCard(m)));
+// TV Detail
+let currentTV=null;
+async function showTVDetail(item){
+currentTV=item;
+detailPoster.src=item.poster_path?IMAGE_BASE+item.poster_path:FALLBACK;
+detailTitle.textContent=item.name;
+detailRating.textContent=(item.vote_average||0).toFixed(1);
+detailOverview.textContent=item.overview||"No description";
+seasonsEl.innerHTML=""; episodesEl.innerHTML="";
+const tvData=await fetch(`${API_URL}/tv/${item.id}?api_key=${API_KEY}`).then(r=>r.json());
+tvData.seasons.forEach(s=>{
+const btn=document.createElement("button"); btn.className="season-btn"; btn.textContent="S"+s.season_number;
+btn.onclick=()=>loadEpisodes(item.id,s.season_number,btn);
+seasonsEl.appendChild(btn);
+});
+detailOverlay.classList.add("show");
+saveRecentlyWatched(item,"tv");
+}
+
+async function loadEpisodes(tvId,seasonNum,btn){
+document.querySelectorAll(".season-btn").forEach(b=>b.classList.remove("active"));
+btn.classList.add("active");
+episodesEl.innerHTML="";
+const seasonData=await fetch(`${API_URL}/tv/${tvId}/season/${seasonNum}?api_key=${API_KEY}`).then(r=>r.json());
+seasonData.episodes.forEach(ep=>{
+const b=document.createElement("button"); b.className="episode-btn"; b.textContent="Ep"+ep.episode_number+": "+ep.name;
+b.onclick=()=>{player.src=`https://player.videasy.net/tv/${tvId}/${seasonNum}/${ep.episode_number}`; videoOverlay.classList.add("show");};
+episodesEl.appendChild(b);
+});
+}
+
+// Auto Search
+document.getElementById("movieSearch").addEventListener("input", async ()=>{
+const q=document.getElementById("movieSearch").value.trim();
+const content=document.getElementById("movieContent");
+const results=document.getElementById("movieSearchResults");
+if(!q){content.style.display="block"; results.style.display="none"; return;}
+const res=await fetch(`${API_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(q)}`);
+const data=await res.json();
+results.innerHTML=""; if(data.results)data.results.forEach(i=>results.appendChild(createCard(i,"movie")));
+content.style.display="none"; results.style.display="flex";
 });
 
-// --- Categories ---
-let genres={};
-async function fetchGenres(){
-  const res=await fetch(`${API_URL}/genre/movie/list?api_key=${API_KEY}&language=en-US`);
-  const data=await res.json();
-  data.genres.forEach(g=>genres[g.name]=g.id);
-  Object.keys(genres).forEach(name=>{
-    const btn=document.createElement("button");
-    btn.textContent=name;
-    btn.onclick=async()=>{
-      const movies = await fetchItems(`${API_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genres[name]}&language=en-US&page=1`);
-      searchResults.innerHTML=""; movies.forEach(m=>searchResults.appendChild(createCard(m)));
-      searchOverlay.classList.add("show"); categoryMenu.style.display="none";
-    };
-    categoryMenu.appendChild(btn);
-  });
-}
-categoryBtnOverlay.onclick=()=>{ categoryMenu.style.display = categoryMenu.style.display==="flex"?"none":"flex"; };
+document.getElementById("tvSearch").addEventListener("input", async ()=>{
+const q=document.getElementById("tvSearch").value.trim();
+const content=document.getElementById("tvContent");
+const results=document.getElementById("tvSearchResults");
+if(!q){content.style.display="block"; results.style.display="none"; return;}
+const res=await fetch(`${API_URL}/search/tv?api_key=${API_KEY}&query=${encodeURIComponent(q)}`);
+const data=await res.json();
+results.innerHTML=""; if(data.results)data.results.forEach(i=>results.appendChild(createCard(i,"tv")));
+content.style.display="none"; results.style.display="flex";
+});
 
-// --- Init ---
-window.onload=()=>{
-  renderRow(`${API_URL}/movie/popular?api_key=${API_KEY}&language=en-US&page=1` , popularList);
-  renderRow(`${API_URL}/movie/top_rated?api_key=${API_KEY}&language=en-US&page=1` , topRatedList);
-  renderRow(`${API_URL}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=1` , upcomingList);
-  renderRecentlyWatched();
-  fetchGenres();
-};
+// Init
+(async function(){
+renderRecentlyWatched();
+await renderRow(`${API_URL}/movie/popular?api_key=${API_KEY}`,document.getElementById("popularMovies"),"movie");
+await renderRow(`${API_URL}/movie/top_rated?api_key=${API_KEY}`,document.getElementById("topRatedMovies"),"movie");
+await renderRow(`${API_URL}/tv/popular?api_key=${API_KEY}`,document.getElementById("popularTV"),"tv");
+await renderRow(`${API_URL}/tv/top_rated?api_key=${API_KEY}`,document.getElementById("topRatedTV"),"tv");
+})();
 </script>
-  <script>
-let deferredPrompt;
-
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault(); // Prevent automatic prompt
-  deferredPrompt = e;
-  const installBtn = document.createElement("button");
-  installBtn.innerText = "Install GlitchFlix";
-  installBtn.style = "position: fixed; bottom: 20px; right: 20px; padding: 10px; z-index: 9999;";
-  document.body.appendChild(installBtn);
-
-  installBtn.addEventListener("click", async () => {
-    installBtn.style.display = "none";
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to install: ${outcome}`);
-    deferredPrompt = null;
-  });
-});
-  </script>
 </body>
 </html>
